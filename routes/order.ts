@@ -36,7 +36,19 @@ export function placeOrder () {
       .then(async (basket: BasketModel | null) => {
         if (basket != null) {
           const customer = security.authenticatedUsers.from(req)
-          const email = customer ? customer.data ? customer.data.email : '' : ''
+          if (!customer || !customer.data) {
+            res.status(401).json({ error: 'Unauthenticated' })
+            return
+          }
+          if (customer.bid && customer.bid !== parseInt(id, 10)) {
+            res.status(403).json({ error: 'Not your basket' })
+            return
+          }
+          if (req.body.UserId && req.body.UserId !== customer.data.id) {
+            res.status(403).json({ error: 'UserId does not match authenticated user' })
+            return
+          }
+          const email = customer.data.email ?? ''
           const orderId = security.hash(email).slice(0, 4) + '-' + utils.randomHexString(16)
           const pdfFile = `order_${orderId}.pdf`
           const { default: PDFDocument } = await import('pdfkit')
