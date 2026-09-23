@@ -3,7 +3,6 @@
  * SPDX-License-Identifier: MIT
  */
 
-import vm from 'node:vm'
 import { type Request, type Response, type NextFunction } from 'express'
 // @ts-expect-error FIXME due to non-existing type definitions for notevil
 import { eval as safeEval } from 'notevil'
@@ -13,17 +12,18 @@ import { challenges } from '../data/datacache'
 import * as security from '../lib/insecurity'
 import * as utils from '../lib/utils'
 
+const TIMEOUT_MS = 2000
+
 export function b2bOrder () {
   return ({ body }: Request, res: Response, next: NextFunction) => {
     if (utils.isChallengeEnabled(challenges.rceChallenge) || utils.isChallengeEnabled(challenges.rceOccupyChallenge)) {
       const orderLinesData = body.orderLinesData || ''
+      const startTime = Date.now()
       try {
-        const sandbox = { safeEval, orderLinesData }
-        vm.createContext(sandbox)
-        vm.runInContext('safeEval(orderLinesData)', sandbox, { timeout: 2000 })
+        safeEval(orderLinesData)
         res.json({ cid: body.cid, orderNo: uniqueOrderNumber(), paymentDue: dateTwoWeeksFromNow() })
       } catch (err) {
-        if (utils.getErrorMessage(err).match(/Script execution timed out.*/) != null) {
+        if (Date.now() - startTime >= TIMEOUT_MS) {
           challengeUtils.solveIf(challenges.rceOccupyChallenge, () => { return true })
           res.status(503)
           next(new Error('Sorry, we are temporarily not available! Please try again later.'))
