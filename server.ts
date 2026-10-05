@@ -119,6 +119,7 @@ import { updateProductReviews } from './routes/updateProductReviews'
 import { servePrivacyPolicyProof } from './routes/privacyPolicyProof'
 import { profileImageUrlUpload } from './routes/profileImageUrlUpload'
 import { profileImageFileUpload } from './routes/profileImageFileUpload'
+import { retrieveRemoteDiagnostics } from './routes/remoteDiagnostics'
 import { serveCodeFixes, checkCorrectFix } from './routes/vulnCodeFixes'
 import { imageCaptchas, verifyImageCaptcha } from './routes/imageCaptcha'
 import { upgradeToDeluxe, deluxeMembershipStatus } from './routes/deluxe'
@@ -604,6 +605,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.put('/rest/basket/:id/coupon/:coupon', utils.asyncHandler(applyCoupon()))
   app.get('/rest/admin/application-version', utils.asyncHandler(retrieveAppVersion()))
   app.get('/rest/admin/application-configuration', utils.asyncHandler(retrieveAppConfiguration()))
+  app.get('/rest/admin/remote-diagnostics', utils.asyncHandler(retrieveRemoteDiagnostics()))
   app.get('/rest/repeat-notification', utils.asyncHandler(repeatNotification()))
   app.get('/rest/continue-code', utils.asyncHandler(continueCode()))
   app.get('/rest/continue-code-findIt', utils.asyncHandler(continueCodeFindIt()))
