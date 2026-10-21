@@ -114,6 +114,7 @@ import { showProductReviews } from './routes/showProductReviews'
 import { nftMintListener, walletNFTVerify } from './routes/nftMint'
 import { createProductReviews } from './routes/createProductReviews'
 import { getWalletBalance, addWalletBalance } from './routes/wallet'
+import { testWebhook } from './routes/webhookTest'
 import { retrieveAppConfiguration } from './routes/appConfiguration'
 import { updateProductReviews } from './routes/updateProductReviews'
 import { servePrivacyPolicyProof } from './routes/privacyPolicyProof'
@@ -605,6 +606,7 @@ function configureApp (app: ReturnType<typeof express>, seq: typeof sequelize) {
   app.get('/rest/admin/application-version', utils.asyncHandler(retrieveAppVersion()))
   app.get('/rest/admin/application-configuration', utils.asyncHandler(retrieveAppConfiguration()))
   app.get('/rest/repeat-notification', utils.asyncHandler(repeatNotification()))
+  app.post('/rest/webhooks/test', utils.asyncHandler(testWebhook()))
   app.get('/rest/continue-code', utils.asyncHandler(continueCode()))
   app.get('/rest/continue-code-findIt', utils.asyncHandler(continueCodeFindIt()))
   app.get('/rest/continue-code-fixIt', utils.asyncHandler(continueCodeFixIt()))
